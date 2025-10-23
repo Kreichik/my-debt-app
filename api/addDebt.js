@@ -1,34 +1,59 @@
-// api/addDebt.js
 import { PrismaClient } from '@prisma/client';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const ADMIN_ID = 918550382; // Твой ID
+
+// Функция для проверки подлинности данных от Telegram
+function validateTelegramData(initData) {
+  if (!initData || !BOT_TOKEN) return false;
+
+  const params = new URLSearchParams(initData);
+  const hash = params.get('hash');
+  params.delete('hash');
+  const dataCheckString = Array.from(params.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`)
+    .join('\n');
+
+  const secretKey = crypto.createHmac('sha256', 'WebAppData').update(BOT_TOKEN).digest();
+  const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+
+  return calculatedHash === hash;
+}
+
 
 export default async function handler(req, res) {
-  // Мы ожидаем, что данные придут методом POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
-    // Вытаскиваем данные из тела запроса
-    const { userId, amount, description } = req.body;
+    const { userId, amount, description, initData } = req.body;
 
-    // Простая валидация: проверяем, что все нужные данные пришли
+    // --- ГЛАВНАЯ ПРОВЕРКА БЕЗОПАСНОСТИ ---
+    const isValid = validateTelegramData(initData);
+    const requestUser = new URLSearchParams(initData).get('user');
+    const requestUserId = requestUser ? JSON.parse(decodeURIComponent(requestUser)).id : null;
+
+    if (!isValid || requestUserId !== ADMIN_ID) {
+      return res.status(403).json({ error: 'Forbidden: Admin access required' });
+    }
+    // ------------------------------------
+
     if (!userId || !amount || !description) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Создаем новую запись в базе данных
     const newDebt = await prisma.debt.create({
       data: {
         telegramUserId: String(userId),
-        amount: parseFloat(amount), // Превращаем строку в число
+        amount: parseFloat(amount),
         description: description,
       },
     });
 
-    // Отправляем обратно созданную запись в качестве подтверждения
-    // Статус 201 означает "Created"
     return res.status(201).json(newDebt);
   } catch (error) {
     console.error('Request error', error);
