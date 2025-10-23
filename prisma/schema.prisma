@@ -1,0 +1,20 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Prisma будет брать ключ из переменных окружения
+}
+
+// Наша модель (таблица) для хранения долгов
+model Debt {
+  id              Int      @id @default(autoincrement()) // Уникальный номер записи
+  telegramUserId  String   @map("telegram_user_id")     // ID пользователя в Telegram
+  amount          Float    // Сумма долга
+  description     String   // Описание, на что были даны деньги
+  createdAt       DateTime @default(now()) @map("created_at") // Дата создания
+}
