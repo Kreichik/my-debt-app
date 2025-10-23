@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-// Получаем объект Telegram Web App
 const tg = window.Telegram.WebApp;
 
 function App() {
-  const [debts, setDebts] = useState([]); // Состояние для хранения списка долгов
-  const [loading, setLoading] = useState(true); // Состояние для отслеживания загрузки
-  const [error, setError] = useState(null); // Состояние для хранения ошибки
+  const [debts, setDebts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // useEffect будет выполняться один раз после того, как компонент отобразится
+  // Новые состояния для полей формы
+  const [newAmount, setNewAmount] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
-    // Включаем кнопку "назад" в интерфейсе Telegram, чтобы можно было закрыть аппку
     tg.BackButton.show();
     tg.onEvent('backButtonClicked', () => tg.close());
 
     const fetchDebts = async () => {
-      // Получаем ID пользователя из данных Telegram
       const userId = tg.initDataUnsafe?.user?.id;
-
       if (!userId) {
         setError("Не удалось определить пользователя Telegram.");
         setLoading(false);
@@ -26,38 +26,97 @@ function App() {
       }
 
       try {
-        // Делаем запрос к нашему API.
-        // Используем относительный путь, Vercel сам поймет, куда направить запрос.
         const response = await fetch(`/api/getDebts?userId=${userId}`);
-        if (!response.ok) {
-          throw new Error('Ошибка сети или сервера');
-        }
+        if (!response.ok) throw new Error('Ошибка сети или сервера');
         const data = await response.json();
-        setDebts(data); // Сохраняем полученные данные в состояние
+        setDebts(data);
       } catch (e) {
-        setError(e.message); // В случае ошибки, сохраняем ее
+        setError(e.message);
       } finally {
-        setLoading(false); // В любом случае убираем индикатор загрузки
+        setLoading(false);
       }
     };
 
     fetchDebts();
-  }, []); // Пустой массив [] означает, что эффект выполнится только один раз
+  }, []);
 
-  // --- Ниже идет логика отображения в зависимости от состояний ---
+  // --- НОВАЯ ФУНКЦИЯ ДЛЯ ДОБАВЛЕНИЯ ДОЛГА ---
+  const handleAddDebt = async (e) => {
+    e.preventDefault(); // Предотвращаем стандартную перезагрузку страницы при отправке формы
 
-  if (loading) {
-    return <div className="app-container">Загрузка...</div>;
-  }
+    if (!newAmount || !newDescription || isSubmitting) {
+      return; // Не отправлять, если поля пустые или уже идет отправка
+    }
 
-  if (error) {
-    return <div className="app-container">Ошибка: {error}</div>;
-  }
+    setIsSubmitting(true);
+    const userId = tg.initDataUnsafe?.user?.id;
+
+    try {
+      const response = await fetch('/api/addDebt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          amount: parseFloat(newAmount),
+          description: newDescription,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Не удалось добавить долг');
+
+      const newDebt = await response.json();
+
+      // Оптимистичное обновление: добавляем новый долг в начало списка
+      // без повторного запроса всех данных с сервера.
+      setDebts([newDebt, ...debts]);
+
+      // Очищаем поля формы
+      setNewAmount('');
+      setNewDescription('');
+
+    } catch (error) {
+      // Здесь можно показать пользователю уведомление об ошибке
+      console.error(error);
+      alert('Произошла ошибка при добавлении долга.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
+  if (loading) return <div className="app-container">Загрузка...</div>;
+  if (error) return <div className="app-container">Ошибка: {error}</div>;
   
   const totalAmount = debts.reduce((sum, debt) => sum + debt.amount, 0);
 
   return (
     <div className="app-container">
+      {/* --- НОВАЯ ФОРМА --- */}
+      <form onSubmit={handleAddDebt} className="add-debt-form">
+        <h3>Добавить новый долг</h3>
+        <div className="form-group">
+          <input
+            type="number"
+            placeholder="Сумма"
+            value={newAmount}
+            onChange={(e) => setNewAmount(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Описание (на что?)"
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Добавление...' : 'Добавить'}
+        </button>
+      </form>
+      
       {debts.length === 0 ? (
         <div className="no-debts">
           <h2>Ты ничего не должен! 🎉</h2>
