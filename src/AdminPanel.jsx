@@ -129,7 +129,8 @@ export default function AdminPanel() {
               <div className="debt-list">
                 <h4>Текущие долги</h4>
                 {userDebts.filter(d => d.status === 'UNPAID').length === 0 && <p>Непогашенных долгов нет.</p>}
-                {userDebts.filter(d => d.status === 'UNPAID').map(debt => (
+                {userDebts.filter(d => d.status === 'UNPAID' && d.amount > 0).map(debt => (
+
                   <div key={debt.id} className="debt-card admin-debt-card">
                     <div className="debt-card-header">
                       <span className="debt-amount">{debt.amount.toLocaleString('ru-RU')} ₸</span>
