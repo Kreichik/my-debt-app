@@ -1,134 +1,189 @@
-/* Новые стили для карточек долгов */
-.debt-card {
-  background-color: var(--tg-theme-secondary-bg-color, #f9f9f9);
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+/* Общие стили */
+:root {
+  --tg-theme-bg-color: #ffffff;
+  --tg-theme-text-color: #000000;
+  --tg-theme-hint-color: #707579;
+  --tg-theme-button-color: #31b545; /* Сделаем кнопку зеленой */
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-secondary-bg-color: #f3f4f6;
+  --danger-color: #e53935;
+  --accent-color: #1a73e8;
 }
 
-.debt-card-header {
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+}
+
+.app-container {
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+/* --- Стили для страницы пользователя (UserView) --- */
+.user-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
-
-.debt-card-header .debt-amount {
-  font-size: 1.2em;
-  font-weight: 600;
-  color: var(--tg-theme-text-color);
-}
-
-.debt-card-header .debt-date {
-  font-size: 0.85em;
-  color: var(--tg-theme-hint-color);
-}
-
-.debt-card-body p {
+.user-header h1 {
+  font-size: 24px;
   margin: 0;
-  font-size: 1em;
-  color: var(--tg-theme-text-color);
+}
+.info-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--tg-theme-hint-color);
+  background: none;
+  color: var(--tg-theme-hint-color);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-/* Обновляем стили для общего долга */
-.total-debt h1 {
-  font-size: 2.8em;
-  color: #e53935; /* Более насыщенный красный */
+.no-debts-card {
+  text-align: center;
+  background: var(--tg-theme-secondary-bg-color);
+  padding: 40px 20px;
+  border-radius: 16px;
+  margin-top: 30px;
 }
+.party-popper { font-size: 48px; }
+.no-debts-card h2 { margin: 10px 0 5px 0; }
+.no-debts-card p { color: var(--tg-theme-hint-color); margin: 0; }
 
-.debt-history h3 {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
-  margin-bottom: 15px;
-}
-
-/* Удаляем старые стили для debt-item, чтобы они не конфликтовали */
-.debt-item { display: none; }
-
-/* Стили для админ-панели */
-.admin-panel h2 {
+.total-debt-card {
+  background: linear-gradient(135deg, var(--danger-color), #ff7575);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
   text-align: center;
   margin-bottom: 20px;
 }
+.total-debt-card span { font-size: 16px; opacity: 0.9; }
+.total-debt-card .total-amount { font-size: 36px; font-weight: 700; margin-top: 5px; }
 
-.user-selection-box {
-  background-color: var(--tg-theme-secondary-bg-color, #f4f4f4);
-  padding: 15px;
+.debt-list { display: flex; flex-direction: column; gap: 12px; }
+.debt-card {
+  background-color: var(--tg-theme-secondary-bg-color);
   border-radius: 12px;
-  text-align: center;
-  margin-bottom: 25px;
+  padding: 15px;
+}
+.debt-card-main { display: flex; justify-content: space-between; align-items: flex-start; }
+.debt-description { font-weight: 500; padding-right: 10px; }
+.debt-amount-item { font-weight: 600; white-space: nowrap; }
+.debt-card-footer {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
 }
 
-.user-selection-box select,
-.user-selection-box input {
+/* --- Стили для модального окна --- */
+.info-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+.info-modal-content {
+  background: var(--tg-theme-bg-color);
+  padding: 25px;
+  border-radius: 16px;
+  max-width: 400px;
   width: 100%;
-  padding: 10px;
+  position: relative;
+}
+.info-modal-content h2 { margin-top: 0; }
+.close-btn {
+  position: absolute;
+  top: 10px; right: 15px;
+  background: none; border: none;
+  font-size: 28px;
+  color: var(--tg-theme-hint-color);
+  cursor: pointer;
+}
+.payment-methods { padding-left: 20px; }
+.payment-methods li { margin-bottom: 8px; }
+.understand-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+/* --- Стили для админ-панели --- */
+.admin-header {
+  text-align: center;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--tg-theme-secondary-bg-color);
+}
+.admin-header h2 { margin: 0; }
+
+.admin-section {
+  background: var(--tg-theme-secondary-bg-color);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.admin-section h4 { margin: 0 0 15px 0; text-align: center; }
+.admin-section select, .admin-section input {
+  width: 100%;
+  padding: 12px;
   margin-bottom: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
-
-.user-selection-box button {
-  width: 100%;
-  padding: 10px;
+.custom-user-form { display: flex; gap: 10px; }
+.custom-user-form button, .admin-form button {
+  padding: 12px 20px;
   border: none;
-  background-color: var(--tg-theme-button-color);
-  color: var(--tg-theme-button-text-color);
   border-radius: 8px;
-  font-weight: bold;
-}
-
-.debt-management h3,
-.admin-form h4,
-.debt-list h4 {
-  text-align: center;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-.admin-form {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.admin-form input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.admin-form button {
-  padding: 12px;
-  border: none;
-  background-color: #28a745; /* Зеленый для добавления */
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--accent-color);
   color: white;
-  border-radius: 8px;
-  font-weight: bold;
 }
+.admin-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; border-top: 1px solid #ddd; padding-top: 15px; }
+.admin-form h5 { margin: 0 0 10px 0; font-size: 16px; }
+.admin-form button.repay-btn { background-color: var(--tg-theme-button-color); }
 
-.admin-debt-card {
-  position: relative;
+.admin-summary-card {
+  text-align: center;
+  padding: 15px;
+  border-radius: 12px;
+  background: var(--accent-color);
+  color: white;
+  margin-bottom: 20px;
 }
+.admin-summary-card span { opacity: 0.9; }
+.admin-summary-card .total-amount { font-size: 28px; font-weight: 700; }
 
-.admin-debt-card.paid {
-  opacity: 0.5;
-  background-color: #f0f0f0;
-}
-
+.admin-debt-card { padding: 10px; }
+.admin-debt-card.paid { opacity: 0.6; background-color: #e9e9e9; }
 .pay-off-btn {
-  margin-top: 10px;
   width: 100%;
   padding: 8px;
-  border: none;
-  background-color: #dc3545; /* Красный для погашения */
+  margin-top: 10px;
+  background: var(--danger-color);
   color: white;
+  border: none;
   border-radius: 8px;
-  cursor: pointer;
 }

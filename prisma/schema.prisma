@@ -12,11 +12,12 @@ datasource db {
 
 // Наша модель (таблица) для хранения долгов
 model Debt {
-  id              Int      @id @default(autoincrement())
-  telegramUserId  String   @map("telegram_user_id")
-  amount          Float
-  description     String
-  issuedAt        DateTime @default(now()) @map("issued_at") // Новое поле для даты выдачи
-  createdAt       DateTime @default(now()) @map("created_at")
-  status          String   @default("UNPAID") // Новое поле для статуса
+  id               Int      @id @default(autoincrement())
+  telegramUserId   String   @map("telegram_user_id")
+  telegramUserName String?  @map("telegram_user_name") // НОВОЕ ПОЛЕ для имени
+  amount           Float
+  description      String
+  issuedAt         DateTime @default(now()) @map("issued_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  status           String   @default("UNPAID")
 }
