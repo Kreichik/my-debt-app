@@ -12,9 +12,11 @@ datasource db {
 
 // Наша модель (таблица) для хранения долгов
 model Debt {
-  id              Int      @id @default(autoincrement()) // Уникальный номер записи
-  telegramUserId  String   @map("telegram_user_id")     // ID пользователя в Telegram
-  amount          Float    // Сумма долга
-  description     String   // Описание, на что были даны деньги
-  createdAt       DateTime @default(now()) @map("created_at") // Дата создания
+  id              Int      @id @default(autoincrement())
+  telegramUserId  String   @map("telegram_user_id")
+  amount          Float
+  description     String
+  issuedAt        DateTime @default(now()) @map("issued_at") // Новое поле для даты выдачи
+  createdAt       DateTime @default(now()) @map("created_at")
+  status          String   @default("UNPAID") // Новое поле для статуса
 }

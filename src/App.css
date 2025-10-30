@@ -47,3 +47,88 @@
 
 /* Удаляем старые стили для debt-item, чтобы они не конфликтовали */
 .debt-item { display: none; }
+
+/* Стили для админ-панели */
+.admin-panel h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.user-selection-box {
+  background-color: var(--tg-theme-secondary-bg-color, #f4f4f4);
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.user-selection-box select,
+.user-selection-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.user-selection-box button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.debt-management h3,
+.admin-form h4,
+.debt-list h4 {
+  text-align: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.admin-form {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-form input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.admin-form button {
+  padding: 12px;
+  border: none;
+  background-color: #28a745; /* Зеленый для добавления */
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.admin-debt-card {
+  position: relative;
+}
+
+.admin-debt-card.paid {
+  opacity: 0.5;
+  background-color: #f0f0f0;
+}
+
+.pay-off-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background-color: #dc3545; /* Красный для погашения */
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
